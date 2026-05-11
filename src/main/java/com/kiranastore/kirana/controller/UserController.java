@@ -18,6 +18,7 @@ public class UserController {
     @Autowired
     private AuthService authService;
 
+
     @PutMapping("/update-profile")
     public ResponseEntity<?> updateProfile(
             @RequestBody Map<String, String> profileRequest,
