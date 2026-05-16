@@ -92,6 +92,7 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> loginRequest) {
         try {
             String identifier = loginRequest.get("identifier");
+            //test
             String password = loginRequest.get("password");
 
             if (identifier == null || identifier.trim().isEmpty()) {
