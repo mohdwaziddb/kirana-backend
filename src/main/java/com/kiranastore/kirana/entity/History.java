@@ -16,6 +16,9 @@ public class History {
     
     @Column(name = "table_data", columnDefinition = "TEXT")
     private String tableData;
+
+    @Column(name = "customer_name")
+    private String customerName;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "action", nullable = false)
@@ -62,6 +65,14 @@ public class History {
     
     public void setTableData(String tableData) {
         this.tableData = tableData;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
     
     public Action getAction() {

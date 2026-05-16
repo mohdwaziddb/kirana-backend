@@ -17,12 +17,13 @@ public class HistoryService {
     @Autowired
     private HistoryRepository historyRepository;
     
-    public History saveHistory(Long userId, String tableData, String action) {
+    public History saveHistory(Long userId, String tableData, String action, String customerName) {
         History.Action actionEnum = History.Action.valueOf(action.toUpperCase());
         
         History history = new History();
         history.setUserId(userId);
         history.setTableData(tableData);
+        history.setCustomerName(customerName);
         history.setAction(actionEnum);
         history.setTimestamp(LocalDateTime.now());
         
@@ -41,7 +42,7 @@ public class HistoryService {
         return Optional.ofNullable(historyRepository.findByIdAndUserId(historyId, userId));
     }
 
-    public Optional<History> updateHistory(Long historyId, Long userId, String tableData) {
+    public Optional<History> updateHistory(Long historyId, Long userId, String tableData, String customerName) {
         Optional<History> historyOpt = getHistoryByIdAndUserId(historyId, userId);
         if (historyOpt.isEmpty()) {
             return Optional.empty();
@@ -49,6 +50,7 @@ public class HistoryService {
 
         History history = historyOpt.get();
         history.setTableData(tableData);
+        history.setCustomerName(customerName);
         return Optional.of(historyRepository.save(history));
     }
     

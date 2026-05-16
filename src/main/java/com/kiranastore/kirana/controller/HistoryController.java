@@ -44,6 +44,7 @@ public class HistoryController {
             Long userId = user.getId();
             String tableData = (String) request.get("tableData");
             String action = (String) request.get("action");
+            String customerName = request.get("customerName") == null ? "" : String.valueOf(request.get("customerName")).trim();
             
             if (userId == null || tableData == null || action == null) {
                 Map<String, String> error = new HashMap<>();
@@ -51,11 +52,13 @@ public class HistoryController {
                 return ResponseEntity.badRequest().body(error);
             }
             
-            History savedHistory = historyService.saveHistory(userId, tableData, action);
+            History savedHistory = historyService.saveHistory(userId, tableData, action, customerName);
             
             Map<String, Object> response = new HashMap<>();
             response.put("id", savedHistory.getId());
             response.put("userId", savedHistory.getUserId());
+            response.put("tableData", savedHistory.getTableData());
+            response.put("customerName", savedHistory.getCustomerName());
             response.put("action", savedHistory.getAction().toString());
             response.put("timestamp", savedHistory.getTimestamp());
             response.put("message", "History saved successfully");
@@ -135,6 +138,7 @@ public class HistoryController {
             response.put("id", history.getId());
             response.put("userId", history.getUserId());
             response.put("tableData", history.getTableData());
+            response.put("customerName", history.getCustomerName());
             response.put("action", history.getAction().toString());
             response.put("timestamp", history.getTimestamp());
             
@@ -195,13 +199,14 @@ public class HistoryController {
             }
 
             String tableData = (String) request.get("tableData");
+            String customerName = request.get("customerName") == null ? "" : String.valueOf(request.get("customerName")).trim();
             if (tableData == null || tableData.isBlank()) {
                 Map<String, String> error = new HashMap<>();
                 error.put("error", "Missing required field: tableData");
                 return ResponseEntity.badRequest().body(error);
             }
 
-            Optional<History> historyOpt = historyService.updateHistory(historyId, user.getId(), tableData);
+            Optional<History> historyOpt = historyService.updateHistory(historyId, user.getId(), tableData, customerName);
             if (historyOpt.isEmpty()) {
                 Map<String, String> error = new HashMap<>();
                 error.put("error", "History not found or unauthorized");
@@ -213,6 +218,7 @@ public class HistoryController {
             response.put("id", history.getId());
             response.put("userId", history.getUserId());
             response.put("tableData", history.getTableData());
+            response.put("customerName", history.getCustomerName());
             response.put("action", history.getAction().toString());
             response.put("timestamp", history.getTimestamp());
             response.put("message", "History updated successfully");
