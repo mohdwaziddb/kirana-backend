@@ -40,6 +40,17 @@ public class HistoryService {
     public Optional<History> getHistoryByIdAndUserId(Long historyId, Long userId) {
         return Optional.ofNullable(historyRepository.findByIdAndUserId(historyId, userId));
     }
+
+    public Optional<History> updateHistory(Long historyId, Long userId, String tableData) {
+        Optional<History> historyOpt = getHistoryByIdAndUserId(historyId, userId);
+        if (historyOpt.isEmpty()) {
+            return Optional.empty();
+        }
+
+        History history = historyOpt.get();
+        history.setTableData(tableData);
+        return Optional.of(historyRepository.save(history));
+    }
     
     public boolean deleteHistory(Long historyId, Long userId) {
         Optional<History> history = getHistoryByIdAndUserId(historyId, userId);

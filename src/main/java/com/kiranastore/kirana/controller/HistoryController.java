@@ -180,4 +180,48 @@ public class HistoryController {
             return ResponseEntity.internalServerError().body(error);
         }
     }
+
+    @PutMapping("/{historyId}")
+    public ResponseEntity<?> updateHistory(@PathVariable Long historyId, @RequestBody Map<String, Object> request, Authentication authentication) {
+        try {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            String username = userDetails.getUsername();
+
+            User user = authService.getUserByEmail(username);
+            if (user == null) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "User not found");
+                return ResponseEntity.notFound().build();
+            }
+
+            String tableData = (String) request.get("tableData");
+            if (tableData == null || tableData.isBlank()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "Missing required field: tableData");
+                return ResponseEntity.badRequest().body(error);
+            }
+
+            Optional<History> historyOpt = historyService.updateHistory(historyId, user.getId(), tableData);
+            if (historyOpt.isEmpty()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "History not found or unauthorized");
+                return ResponseEntity.notFound().build();
+            }
+
+            History history = historyOpt.get();
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", history.getId());
+            response.put("userId", history.getUserId());
+            response.put("tableData", history.getTableData());
+            response.put("action", history.getAction().toString());
+            response.put("timestamp", history.getTimestamp());
+            response.put("message", "History updated successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to update history: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
 }
