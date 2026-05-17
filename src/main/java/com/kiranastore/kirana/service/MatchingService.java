@@ -20,7 +20,7 @@ public class MatchingService {
 
     public List<ItemResponse> matchItems(List<ItemRequest> items) {
 
-        List<MasterItem> masterList = repo.findAll();
+        List<MasterItem> masterList = repo.findBuyerVisibleItems();
         List<ItemResponse> result = new ArrayList<>();
 
         for (ItemRequest input : items) {
@@ -53,6 +53,7 @@ public class MatchingService {
 
             if (matchedItem != null) {
 
+                res.setName(matchedItem.getNameEnglish());
                 res.setPrice(matchedItem.getPricePerUnit());
 
                 double qty = extractNumber(input.getQuantity());
@@ -79,11 +80,15 @@ public class MatchingService {
 
     private String normalize(String text) {
         if (text == null) return "";
-        return text.toLowerCase().replaceAll("\\s+", "");
+        return text.toLowerCase()
+                .replaceAll("\\b(wali|wala|wale|waali|waala|waale)\\b", "")
+                .replaceAll("[^a-z0-9\\u0900-\\u097F]", "");
     }
 
     private double extractNumber(String text) {
         if (text == null) return 0;
-        return Double.parseDouble(text.replaceAll("[^0-9.]", ""));
+        String number = text.replaceAll("[^0-9.]", "");
+        if (number.isBlank()) return 0;
+        return Double.parseDouble(number);
     }
 }

@@ -3,6 +3,8 @@ package com.kiranastore.kirana.controller;
 import com.kiranastore.kirana.entity.User;
 import com.kiranastore.kirana.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +20,11 @@ public class UserController {
     @Autowired
     private AuthService authService;
 
+    @Value("${app.version}")
+    private String backendAppVersion;
+
+    private static final String VERSION_ERROR_MESSAGE =
+            "App version update required. Kripya app update karein ya Admin se contact karein. Support: 8130703196";
 
     @PutMapping("/update-profile")
     public ResponseEntity<?> updateProfile(
@@ -53,8 +60,20 @@ public class UserController {
 
     
     @GetMapping("/profile")
-    public ResponseEntity<?> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<?> getProfile(
+            @RequestHeader(value = "X-App-Version", required = false) String frontendAppVersion,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         try {
+            if (!isCompatibleAppVersion(frontendAppVersion)) {
+                return ResponseEntity.status(HttpStatus.UPGRADE_REQUIRED).body(Map.of(
+                        "code", "APP_VERSION_MISMATCH",
+                        "message", VERSION_ERROR_MESSAGE,
+                        "frontendVersion", frontendAppVersion == null ? "" : frontendAppVersion,
+                        "backendVersion", backendAppVersion
+                ));
+            }
+
             User user = authService.getUserByEmail(userDetails.getUsername());
 
             Map<String, Object> response = new HashMap<>();
@@ -70,5 +89,10 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", "Failed to get profile: " + e.getMessage()));
         }
+    }
+
+    private boolean isCompatibleAppVersion(String frontendAppVersion) {
+        return frontendAppVersion != null
+                && frontendAppVersion.trim().equals(backendAppVersion.trim());
     }
 }

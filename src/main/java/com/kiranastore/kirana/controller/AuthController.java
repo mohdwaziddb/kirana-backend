@@ -5,6 +5,8 @@ import com.kiranastore.kirana.entity.User;
 import com.kiranastore.kirana.service.AuthService;
 import com.kiranastore.kirana.security.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,9 @@ public class AuthController {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Value("${app.version}")
+    private String backendAppVersion;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody Map<String, Object> registrationData) {
@@ -94,6 +99,16 @@ public class AuthController {
             String identifier = loginRequest.get("identifier");
             //test
             String password = loginRequest.get("password");
+            String frontendAppVersion = loginRequest.get("appVersion");
+
+            if (!isCompatibleAppVersion(frontendAppVersion)) {
+                return ResponseEntity.status(HttpStatus.UPGRADE_REQUIRED).body(Map.of(
+                        "code", "APP_VERSION_MISMATCH",
+                        "message", "App version update required. Kripya app update karein ya Admin se contact karein. Support: 8130703196",
+                        "frontendVersion", frontendAppVersion == null ? "" : frontendAppVersion,
+                        "backendVersion", backendAppVersion
+                ));
+            }
 
             if (identifier == null || identifier.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("message", "Email, username, or mobile is required"));
@@ -109,6 +124,11 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
+    }
+
+    private boolean isCompatibleAppVersion(String frontendAppVersion) {
+        return frontendAppVersion != null
+                && frontendAppVersion.trim().equals(backendAppVersion.trim());
     }
 
     @GetMapping("/test")
