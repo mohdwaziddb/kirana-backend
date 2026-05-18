@@ -9,12 +9,13 @@ import java.util.Map;
 @RestController
 public class HealthController {
 
-    @GetMapping({"/", "/health"})
+    @GetMapping({"/", "/health", "/health/"})
     public Map<String, Object> health() {
         return Map.of(
-                "success", true,
-                "message", "Kirana backend is running successfully",
-                "status", "UP",
+                "status", true,
+                "state", "UP",
+                "message", "Kirana backend is working successfully",
+                "app", "Kirana Store Backend",
                 "timestamp", Instant.now().toString()
         );
     }
