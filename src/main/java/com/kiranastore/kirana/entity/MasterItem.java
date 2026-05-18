@@ -23,4 +23,11 @@ public class MasterItem {
     private Double pricePerUnit;
 
     private String unit;
+
+    private Long userId;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String productImage;
+
+    private Boolean isProductLive = true;
 }

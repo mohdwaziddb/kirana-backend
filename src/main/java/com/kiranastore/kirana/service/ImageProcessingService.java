@@ -19,13 +19,17 @@ public class ImageProcessingService {
     private final ItemProcessingService itemProcessingService;
 
     public Map<String, Object> processImage(MultipartFile file) {
+        return processImage(file, null);
+    }
+
+    public Map<String, Object> processImage(MultipartFile file, Long userId) {
 
         try {
             String extractedText = ocrService.extractText(file);
 
             System.out.println("OCR TEXT: " + extractedText);
 
-            List<ItemResponse> items = itemProcessingService.processText(extractedText);
+            List<ItemResponse> items = itemProcessingService.processText(extractedText, userId);
 
             Map<String, Object> response = new HashMap<>();
             response.put("items", items);

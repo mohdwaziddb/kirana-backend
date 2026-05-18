@@ -20,7 +20,10 @@ public class ImageController {
     }
 
     @PostMapping("/upload-image")
-    public Map<String, Object> uploadImage(@RequestParam("file") MultipartFile file) {
-        return imageProcessingService.processImage(file);
+    public Map<String, Object> uploadImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(required = false) Long userId
+    ) {
+        return imageProcessingService.processImage(file, userId);
     }
 }

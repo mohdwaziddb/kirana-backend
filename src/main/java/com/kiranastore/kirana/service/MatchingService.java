@@ -19,8 +19,14 @@ public class MatchingService {
     }
 
     public List<ItemResponse> matchItems(List<ItemRequest> items) {
+        return matchItems(items, null);
+    }
 
-        List<MasterItem> masterList = repo.findAll();
+    public List<ItemResponse> matchItems(List<ItemRequest> items, Long userId) {
+
+        List<MasterItem> masterList = userId == null
+                ? List.of()
+                : repo.findByUserIdAndIsProductLive(userId, true);
         List<ItemResponse> result = new ArrayList<>();
 
         for (ItemRequest input : items) {
@@ -84,6 +90,12 @@ public class MatchingService {
 
     private double extractNumber(String text) {
         if (text == null) return 0;
-        return Double.parseDouble(text.replaceAll("[^0-9.]", ""));
+        String value = text.replaceAll("[^0-9.]", "");
+        if (value.isBlank()) return 0;
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException error) {
+            return 0;
+        }
     }
 }

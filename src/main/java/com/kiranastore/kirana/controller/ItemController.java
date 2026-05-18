@@ -18,7 +18,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public List<ItemResponse> process(@RequestBody String text) {
-        return service.processText(text);
+    public List<ItemResponse> process(@RequestBody String text, @RequestParam(required = false) Long userId) {
+        return service.processText(text, userId);
     }
 }

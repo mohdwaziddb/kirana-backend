@@ -105,6 +105,10 @@ public class AuthService implements UserDetailsService {
         User user = userRepository.findByEmailAndActive(email, true)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
+        if (currentPassword.equals(newPassword)) {
+            throw new RuntimeException("New password must be different from current password");
+        }
+
         // Verify current password
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             return false;

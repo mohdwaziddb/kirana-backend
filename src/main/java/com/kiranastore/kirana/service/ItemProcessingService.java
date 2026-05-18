@@ -18,9 +18,13 @@ public class ItemProcessingService {
 
     // ================= MAIN ENTRY =================
     public List<ItemResponse> processText(String inputText) {
+        return processText(inputText, null);
+    }
+
+    public List<ItemResponse> processText(String inputText, Long userId) {
 
         List<ItemRequest> items = manualParse(inputText);
-        return matchingService.matchItems(items);
+        return matchingService.matchItems(items, userId);
     }
 
     // ================= OCR ENTRY =================

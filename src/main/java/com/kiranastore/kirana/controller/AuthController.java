@@ -130,6 +130,10 @@ public class AuthController {
                 return ResponseEntity.badRequest().body(Map.of("message", "New password must be at least 6 characters"));
             }
 
+            if (currentPassword.equals(newPassword)) {
+                return ResponseEntity.badRequest().body(Map.of("message", "New password must be different from current password"));
+            }
+
             // Extract email from token
             String token = authHeader.replace("Bearer ", "");
             String email = jwtTokenUtil.getUsernameFromToken(token);
