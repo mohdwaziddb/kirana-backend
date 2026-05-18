@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.util.Map;
 
 @RestController
+
 public class HealthController {
 
     @GetMapping({"/", "/health", "/health/"})
